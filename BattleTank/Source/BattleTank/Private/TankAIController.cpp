@@ -3,9 +3,24 @@
 #include "TankAIController.h"
 #include "Engine/World.h"
 
-void ATankAIController::BeginPlay()
+void ATankAIController::Tick(float DeltaTime)
 {
-	auto PlayerTank = GetAIController();
+	Super::Tick(DeltaTime);
+		if (GetPlayerTank())
+		{
+		
+		// TODO Move Toward Player
+		// Aim At Player
+		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+		//Fire if Ready
+		}
+}
+
+void ATankAIController::BeginPlay( )
+{
+	Super::BeginPlay();
+	PrimaryActorTick.bCanEverTick = true;
+	auto PlayerTank = GetPlayerTank();
 
 	if (!PlayerTank)
 	{
@@ -21,7 +36,7 @@ ATank * ATankAIController::GetControlledTank() const
 	return Cast<ATank>(GetPawn());
 }
 
-ATank * ATankAIController::GetAIController() const
+ATank * ATankAIController::GetPlayerTank() const
 {
 	auto PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
 	if (!PlayerPawn) { return NULL; }

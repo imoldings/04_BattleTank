@@ -12,12 +12,16 @@
 UCLASS()
 class BATTLETANK_API ATankAIController : public AAIController
 {
-private:
+public:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+private:
+	
 
 	ATank * GetControlledTank() const;
 
-	ATank * GetAIController() const;
+	ATank * GetPlayerTank() const;
 
 	GENERATED_BODY()
 	
