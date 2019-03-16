@@ -7,39 +7,23 @@
 void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-		if (GetPlayerTank())
-		{
+
+	auto PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	auto ControlledTank = Cast<ATank>(GetPawn());
+	if (PlayerTank)
+	{
 		
 		// TODO Move Toward Player
 		// Aim At Player
-		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+		ControlledTank->AimAt(PlayerTank->GetActorLocation());
 		//Fire if Ready
-		}
+		ControlledTank->Fire(); //TODI Dont fire every frame, Limit firing rate.
+	}
 }
 
 void ATankAIController::BeginPlay( )
 {
 	Super::BeginPlay();
 	PrimaryActorTick.bCanEverTick = true;
-	auto PlayerTank = GetPlayerTank();
-
-	if (!PlayerTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController cannot found Player tank"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AIController Found Player Tank: %s"), *(PlayerTank->GetName()));
-	}
-}
-ATank * ATankAIController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-
-ATank * ATankAIController::GetPlayerTank() const
-{
-	auto PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
-	if (!PlayerPawn) { return NULL; }
-	return Cast<ATank>(PlayerPawn);
+	
 }

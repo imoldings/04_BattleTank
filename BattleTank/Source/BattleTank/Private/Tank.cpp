@@ -4,6 +4,8 @@
 #include "TankBarrel.h"
 #include "Projectile.h"
 #include "TankAimingComponent.h"
+#include "TankMovementComponent.h"
+
 // Sets default values
 ATank::ATank()
 {
@@ -12,6 +14,7 @@ ATank::ATank()
 
 	//No need to protect pointers as added in cunstructors
 	TankAimingComponent = CreateDefaultSubobject<UTankAimingComponent>(FName("Aiming Component"));
+	TankMovementComponent = CreateDefaultSubobject<UTankMovementComponent>(FName("Movement Component"));
 }
 
 
@@ -48,13 +51,17 @@ void ATank::SetTurretReference(UTankTurret * TurretToSet)
 void ATank::Fire()
 {
 	
-
-	if (!Barrel) { return; }
+	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
+	
 	//Spawn a projectile at socket location
-
-	auto Projectile = GetWorld()->SpawnActor<AProjectile>(
-			ProjectileBlueprint, 
-			Barrel->GetSocketLocation(FName("Projectile")), 
+	if (Barrel && isReloaded) 
+	{
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("Projectile")),
 			Barrel->GetSocketRotation(FName("Projectile")));
-	Projectile->LaunchProjectile(LaunchSpeed);
+			Projectile->LaunchProjectile(LaunchSpeed);
+
+			LastFireTime = FPlatformTime::Seconds();
+	}
 }
